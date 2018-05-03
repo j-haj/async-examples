@@ -15,3 +15,14 @@ example3: example3.cpp
 
 example4: example4.cpp
 	$(CC) $(STD) $(CFLAGS) example4.cpp -o example4
+
+example5: example5.cpp
+	$(CC) $(STD) $(CFLAGS) example5.cpp -o example5
+
+example6: example6.cpp
+	$(CC) $(STD) $(CFLAGS) example6.cpp -o example6
+
+ompex: openmp_ex.cpp
+	$(CC) $(STD) $(CFLAGS) -fopenmp openmp_ex.cpp -o omp_ex 
+
+
