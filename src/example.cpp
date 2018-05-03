@@ -59,6 +59,9 @@ class Worker {
 };
 
 int main() {
+  using steady_clock = std::chrono::steady_clock;
+
+  auto start = steady_clock::now();
 
   std::queue<long long> prime_q;
   Producer producer(1000000, 100000000);
@@ -73,5 +76,9 @@ int main() {
     worker.work(prime_q.front());
     prime_q.pop();
   }
+
+  auto stop = steady_clock::now();
+  std::chrono::duration<double> elapsed = stop - start;
+  std::cout << "Total elapsed time " << elapsed.count() << '\n';
   return 0;
 }
