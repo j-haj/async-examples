@@ -5,6 +5,7 @@
 #include <queue>
 #include <vector>
 #include <future>
+#include <utility>
 #include <time.h>
 
 constexpr unsigned int kSleepDuration = 1;
@@ -21,12 +22,12 @@ std::ostream& operator<<(std::ostream& os, const std::queue<T>& q) {
   return os;
 }
 
-bool is_prime_slow(long long n) {
+std::pair<long long, bool> is_prime_slow(long long n) {
   bool result = true;
   for (long long i = 2; i < n; ++i) {
     if (n % i == 0) result = false;
   }
-  return result;
+  return std::make_pair(n, result);
 }
 
 void random_sleep() {
@@ -53,18 +54,6 @@ class Producer {
   long long high_;
 };
 
-class Worker {
-  public:
-  Worker(long long n) : n_(n) {}
-
-  void operator()() {
-    if (is_prime_slow(n_)) std::cout << n_ << " is prime" << std::endl;
-    else std::cout << n_ << " is not prime" << std::endl;
-  }
-  private:
-  long long n_;
-};
-
 int main() {
 
   std::queue<long long> prime_q;
@@ -75,16 +64,16 @@ int main() {
     prime_q.push(val);
   }
   std::cout << prime_q << '\n';
-  std::vector<std::> threads;
+  std::vector<std::future<std::pair<long long, bool>>> threads;
   while (!prime_q.empty()) {
-    Worker w(prime_q.front());
-    std::thread t(w);
-    threads.push_back(std::move(t));
+    auto f = std::async(std::launch::async, is_prime_slow, prime_q.front());;
+    threads.push_back(std::move(f));
     prime_q.pop();
   }
   // Wait for all threads to finish
   for (auto& t : threads) {
-    t.join();
+    auto r = t.get();
+    std::cout << r.first << (r.second ? " is " : " is not ") << "prime\n";
   }
   return 0;
 }
